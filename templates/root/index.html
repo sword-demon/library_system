@@ -1,0 +1,78 @@
+{% extends 'layout/app.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'add' %}" class="btn btn-primary mb-2">添加图书</a>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>书名</th>
+            <th>出版日期</th>
+            <th>价格</th>
+            <th>出版社</th>
+            <th>作者</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.pub_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ book.price }}</td>
+                <td>{{ book.publish.name }}</td>
+                <td>
+                    {% for author in book.authors.all %}
+                        <a href="{% url 'author_own_book' id=author.id %}">{{ author.name }}</a>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'edit_book' book.pk %}" class="btn btn-success btn-sm">编辑</a>
+                    <button type="button" data-id="{{ book.pk }}"
+                            class="btn btn-danger btn-sm" onclick="confirm_delete(this)">删除
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li>
+                {{ page_html|safe }}
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function confirm_delete(obj) {
+            var id = $(obj).data("id");
+            layer.confirm('确定要删除吗?', {icon: 3, title: '删除书籍'}, function (index) {
+                $.post("{% url 'delete_book' %}", {
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    'id': id
+                }, (res) => {
+                    if (res.status) {
+                        layer.msg(res.msg, {
+                            icon: 6
+                        }, function () {
+                            layer.close(index);
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+                return false;
+            });
+        }
+    </script>
+{% endblock %}

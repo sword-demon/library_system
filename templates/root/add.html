@@ -1,0 +1,122 @@
+{% extends 'layout/app.html' %}
+
+{% block title %}
+    添加图书
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">添加图书</div>
+
+                    <div class="card-body">
+                        <form>
+                            {% csrf_token %}
+
+                            <div class="form-group row">
+                                <label for="" class="col-md-4 col-form-label text-md-right">书籍名称</label>
+                                <div class="col-md-6">
+                                    <input type="text" maxlength="32" class="form-control" name="title" required
+                                           autocomplete="off"
+                                           placeholder="请输入书籍名称">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="" class="col-md-4 col-form-label text-md-right">出版日期</label>
+                                <div class="col-md-6">
+                                    <input type="date" name="pub_date" class="form-control" required
+                                           autocomplete="off"
+                                           placeholder="请输入书籍出版时间">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="" class="col-md-4 col-form-label text-md-right">书籍价格</label>
+                                <div class="col-md-6">
+                                    <input type="tel" min="0" name="price" class="form-control" required
+                                           autocomplete="off"
+                                           placeholder="请输入书籍价格">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="" class="col-md-4 col-form-label text-md-right">所属出版社</label>
+                                <div class="col-md-6">
+                                    <select name="publish_id" id="publish_id" class="form-control">
+                                        <option value="0">请选择出版社</option>
+                                        {% for publish in publishes %}
+                                            <option value="{{ publish.id }}">{{ publish.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="" class="col-md-4 col-form-label text-md-right">作者</label>
+                                <div class="col-md-6">
+                                    <select name="author_id_list" id="author_id_list" class="form-control" multiple>
+                                        {% for author in authors %}
+                                            <option value="{{ author.id }}">{{ author.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-0">
+                                <div class="col-md-8 offset-md-4">
+                                    <button type="button" class="add_book btn btn-primary">
+                                        保存
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).on("click", ".add_book", function () {
+            let title = $("[name=title]").val();
+            let price = $("[name=price]").val();
+            let pub_date = $("[name=pub_date]").val();
+            let publish_id = $("#publish_id option:selected").val();
+            if (title === "") {
+                layer.msg("书籍名称不能为空");
+                return false;
+            }
+            if (pub_date === "") {
+                layer.msg("请选择出版时间");
+                return false;
+            }
+            let priceReg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+            if (!priceReg.test(price)) {
+                layer.msg("请输入正确的产品价格:整数或者保留两位小数")
+                return false;
+            }
+            console.log(publish_id);
+            if (publish_id == 0) {
+                layer.msg("出版社不能为空");
+                return false;
+            }
+            $.post("{% url 'add' %}", $("form").serialize(), (res) => {
+                if (res.status) {
+                    layer.msg(res.msg, {
+                        icon: 6,
+                        time: 1000
+                    }, function () {
+                        window.location.href = "{% url 'home' %}";
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            }, 'json');
+        });
+    </script>
+{% endblock %}
