@@ -50,4 +50,6 @@ urlpatterns = [
     path('update_author/', views.update_author, name='update_author'),
     # 删除作者
     path('author/delete/', views.delete_author, name='delete_author'),
+    # 查看出版书籍
+    path('publish/<int:id>/books', views.publish_books, name="publish_books")
 ]

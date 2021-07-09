@@ -202,8 +202,32 @@ def delete_author(request):
         return Show.fail("网络异常,请稍后重试")
 
 
-def author_books(request):
-    pass
+def author_books(request, id):
+    """
+    查询作者下有多少书籍
+    :param request:
+    :param id:
+    :return:
+    """
+    if id is None:
+        return render(request, 'layout/500.html')
+    author = Author.objects.filter(id=id).first()
+    books = author.book_set.all()
+    return render(request, 'author/author_books.html', {'books': books, 'author': author})
+
+
+def publish_books(request, id):
+    """
+    查看该出版社下的出版的书籍
+    :param request:
+    :param id:
+    :return:
+    """
+    if id is None:
+        return render(request, 'layout/500.html')
+    publish = Publish.objects.filter(id=id).first()
+    books = publish.book_set.all()
+    return render(request, 'publish/publish_books.html', {'books': books, 'publish': publish})
 
 
 @login_required

@@ -22,11 +22,13 @@
         {% for author in authors %}
             <tr>
                 <td>{{ author.id }}</td>
-                <td>{{ author.name }}</td>
+                <td>
+                    <a href="{% url 'author_own_book' id=author.id %}">{{ author.name }}</a>
+                </td>
                 <td>{{ author.age }}</td>
                 <td>{{ author.mobile }}</td>
                 <td>{{ author.birthday|date:"Y-m-d" }}</td>
-                <td>{{ author.desc }}</td>
+                <td>{{ author.show_desc }}</td>
                 <td>
                     {% include 'author/edit_modal.html' %}
                     <button type="button" data-id="{{ author.pk }}" onclick="confirm_delete(this)"
