@@ -28,7 +28,7 @@
                     <button type="button" data-id="{{ publish.pk }}" onclick="confirm_delete(this)"
                             class="btn btn-danger btn-sm">删除
                     </button>
-                    <a href="{% url 'publish_books' id=publish.id %}">查看出版书籍</a>
+                    <a href="{% url 'publish_books' id=publish.id %}" class="btn btn-sm btn-info">查看出版书籍</a>
                 </td>
             </tr>
         {% endfor %}
@@ -69,7 +69,8 @@
         }
 
         $(document).on("click", ".update_publish", function () {
-            $.post("{% url 'update_publish' %}", $("#update_publish_form").serialize(), function (res) {
+            var id = $(this).data("id")
+            $.post("{% url 'update_publish' %}", $("#update_publish_form_"+id).serialize(), function (res) {
                 if (res.status) {
                     layer.msg(res.msg, {
                         icon: 6

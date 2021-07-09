@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from book.forms.author_form import AddAuthor, UpdateAuthor
+from book.forms.book_form import UpdateBook
 from book.forms.publish_form import AddPublish, UpdatePublish
 from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
@@ -29,6 +30,9 @@ def index(request):
     books = Book.objects.all()[page_obj.start:page_obj.end]
 
     page_html = page_obj.page_html()
+    publishes = Publish.objects.all()
+    authors = Author.objects.all()
+
     return render(request, 'root/index.html', locals())
 
 
@@ -108,11 +112,28 @@ def add(request):
 
 
 @login_required
-def book_edit(request, book_id):
+def update_book(request):
     if request.method == "POST":
-        pass
-    book_info = Book.objects.filter(pk=book_id).first()
-    return render(request, 'root/edit.html', locals())
+        book_form = UpdateBook(request.POST)
+        print(request.POST)
+        author_id_list = request.POST.getlist("author_id_list")
+        print(author_id_list)
+        if book_form.is_valid():
+            try:
+                edit_book_obj = Book.objects.filter(id=request.POST.get("id")).first()
+                print(edit_book_obj)
+                Book.objects.filter(id=request.POST.get("id")).update(
+                    **book_form.cleaned_data)
+                edit_book_obj.authors.set(author_id_list)
+                return Show.success("修改成功")
+            except Exception as e:
+                print(str(e))
+                return Show.fail("网络异常，请稍后再试!")
+        else:
+            print(book_form.errors)
+            return Show.fail(book_form.errors)
+    else:
+        return Show.fail("非法请求")
 
 
 @login_required

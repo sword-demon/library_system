@@ -23,7 +23,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ book.title }}</td>
-                <td>{{ book.pub_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ book.pub_date|date:"Y-m-d" }}</td>
                 <td>{{ book.price }}</td>
                 <td>{{ book.publish.name }}</td>
                 <td>
@@ -32,7 +32,7 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <a href="{% url 'edit_book' book.pk %}" class="btn btn-success btn-sm">编辑</a>
+                    {% include 'root/edit_modal.html' %}
                     <button type="button" data-id="{{ book.pk }}"
                             class="btn btn-danger btn-sm" onclick="confirm_delete(this)">删除
                     </button>
@@ -74,5 +74,36 @@
                 return false;
             });
         }
+
+        $(document).on("click", ".update_book", function () {
+            var id = $(this).data("id");
+            $.post("{% url 'update_book' %}", $('#update_book_form_'+id).serialize(), function (res) {
+                if (res.status) {
+                    layer.msg(res.msg, {
+                        icon: 6
+                    }, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    var result;
+                    if (typeof res.msg == "string") {
+                        result = res.msg;
+                    } else {
+                        var str = "";
+                        $.each(res.msg, function (index, item) {
+                            str += "<br>" + item[0]
+                        });
+                        result = str;
+                    }
+                    layer.msg(result, {
+                        icon: 5,
+                        time: 2000
+                    }, function () {
+                        window.location.reload();
+                    })
+                }
+            }, 'json');
+            return false;
+        });
     </script>
 {% endblock %}

@@ -1,5 +1,7 @@
 from django import template
 
+from book.models import Book
+
 register = template.Library()
 
 

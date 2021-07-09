@@ -13,7 +13,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="update_author_form">
+                <form id="update_author_form_{{ author.id }}">
                     <input type="hidden" name="id" value="{{ author.id }}">
                     {% csrf_token %}
 
@@ -62,7 +62,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="update_author btn btn-primary">保存</button>
+                <button type="button" data-id="{{ author.id }}" class="update_author btn btn-primary">保存</button>
                 <button type="button" class="btn btn-default btn-raised" data-dismiss="modal">取消</button>
             </div>
         </div>

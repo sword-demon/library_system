@@ -1,0 +1,83 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editBook-{{ book.id }}">
+    编辑
+</button>
+<!-- Modal -->
+<div class="modal fade" id="editBook-{{ book.id }}" tabindex="-1" role="dialog"
+     aria-labelledby="editBookLabel-{{ book.id }}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editBookLabel-{{ book.id }}">编辑书籍</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="update_book_form_{{ book.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ book.id }}">
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">书籍名称</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="title" required autocomplete="off"
+                                   placeholder="请输入书籍名称" value="{{ book.title }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">出版日期</label>
+                        <div class="col-md-6">
+                            <input type="date" name="pub_date" class="form-control" required
+                                   autocomplete="off"
+                                   placeholder="请输入书籍出版时间" value="{{ book.pub_date|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">书籍价格</label>
+                        <div class="col-md-6">
+                            <input type="tel" min="0" name="price" class="form-control" required autocomplete="off"
+                                   placeholder="请输入书籍价格" value="{{ book.price }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">所属出版社</label>
+                        <div class="col-md-6">
+                            <select name="publish_id" id="publish_id" class="form-control">
+                                <option value="0">请选择出版社</option>
+                                {% for publish in publishes %}
+                                    <option value="{{ publish.id }}" {% if book.publish_id == publish.id %}
+                                            selected {% endif %}>{{ publish.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">作者</label>
+                        <div class="col-md-6">
+                            <select name="author_id_list" id="author_id_list" class="form-control" multiple>
+                                {% for author in authors %}
+                                    {% if author in book.authors.all %}
+                                        <option selected value="{{ author.id }}">
+                                            {{ author.name }}
+                                        </option>
+                                    {% else %}
+                                        <option value="{{ author.id }}">
+                                            {{ author.name }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-id="{{ book.id }}" class="update_book btn btn-primary">保存</button>
+                <button type="button" class="btn btn-default btn-raised" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>

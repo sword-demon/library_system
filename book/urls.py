@@ -35,7 +35,7 @@ urlpatterns = [
     # 查看作者拥有的书籍
     path('author/<int:id>/ownbooks/', views.author_books, name='author_own_book'),
     # 编辑书籍
-    path('book/<int:id>/edit/', views.book_edit, name="edit_book"),
+    path('update_book/', views.update_book, name="update_book"),
     # 删除书籍
     path('book/delete/', views.book_delete, name="delete_book"),
     # 添加出版社

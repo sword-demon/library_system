@@ -74,7 +74,8 @@
         }
 
         $(document).on("click", ".update_author", function () {
-            $.post("{% url 'update_author' %}", $("#update_author_form").serialize(), function (res) {
+            var id = $(this).data('id');
+            $.post("{% url 'update_author' %}", $("#update_author_form_" + id).serialize(), function (res) {
                 if (res.status) {
                     layer.msg(res.msg, {
                         icon: 6
