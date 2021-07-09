@@ -72,8 +72,7 @@
                 success: function (res) {
                     if (res.status) {
                         layer.msg(res.msg, {
-                            icon: 6,
-                            time: 2000
+                            icon: 6
                         }, function () {
                             location.href = "{% url 'login' %}";
                         });
@@ -83,8 +82,7 @@
                             str += "<br>" + item[0]
                         });
                         layer.msg(str, {
-                            icon: 5,
-                            time: 2000
+                            icon: 5
                         }, function () {
                             window.location.reload();
                         })

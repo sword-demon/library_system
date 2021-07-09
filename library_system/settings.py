@@ -124,7 +124,7 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = 'book.UserInfo'
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/book/login/'
 
 WHITE_LIST = [
     '/book/login/',

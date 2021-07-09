@@ -1,8 +1,10 @@
 from django.contrib import auth
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from book.forms.publish_form import AddPublish, UpdatePublish
 from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
 from utils.json_response import Show
@@ -80,6 +82,7 @@ def logout(request):
     return redirect("login")
 
 
+@login_required
 def add(request):
     if request.method == "POST":
         title = request.POST.get("title")
@@ -103,6 +106,7 @@ def add(request):
     return render(request, 'root/add.html', locals())
 
 
+@login_required
 def book_edit(request, book_id):
     if request.method == "POST":
         pass
@@ -110,6 +114,7 @@ def book_edit(request, book_id):
     return render(request, 'root/edit.html', locals())
 
 
+@login_required
 def book_delete(request):
     if request.method != "POST":
         return Show.fail("请求类型错误")
@@ -151,5 +156,60 @@ def author(request):
     return render(request, 'author/index.html', locals())
 
 
+def add_author(request):
+    pass
+
+
+def update_author(request):
+    pass
+
+
 def author_books(request):
     pass
+
+
+@login_required
+def add_publish(request):
+    if request.method == "POST":
+        publish_form = AddPublish(request.POST)
+        if publish_form.is_valid():
+            # print(publish_form.cleaned_data)
+            Publish.objects.create(**publish_form.cleaned_data)
+            return Show.success("添加成功")
+        else:
+            return Show.fail(publish_form.errors)
+    return render(request, 'publish/add.html', locals())
+
+
+@login_required
+def update_publish(request):
+    if request.method == "POST":
+        publish_form = UpdatePublish(request.POST)
+        if publish_form.is_valid():
+            # print(publish_form.cleaned_data)
+            publish_obj = Publish.objects.filter(id=request.POST.get("id")).update(
+                **publish_form.cleaned_data)
+            if publish_obj:
+                return Show.success("修改成功")
+            else:
+                return Show.fail("该数据不存在")
+        else:
+            return Show.fail(publish_form.errors)
+    else:
+        return Show.fail("非法请求")
+
+
+@login_required
+def delete_publish(request):
+    if request.method != "POST":
+        return Show.fail("请求方法错误")
+
+    publish_id = request.POST.get("id")
+    if publish_id is None:
+        return Show.fail("参数错误")
+    try:
+        Publish.objects.filter(pk=publish_id).first().delete()
+        return Show.success("删除成功")
+    except Exception as e:
+        print("异常: %s" % str(e))
+        return Show.fail("网络异常,请稍后重试")
