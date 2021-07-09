@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    <a href="{% url 'add_publish' %}" class="btn btn-primary mb-2">添加出版社</a>
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -12,6 +13,7 @@
             <th>出版社明朝</th>
             <th>所处城市</th>
             <th>邮箱</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -21,6 +23,13 @@
                 <td>{{ publish.name }}</td>
                 <td>{{ publish.city }}</td>
                 <td>{{ publish.email }}</td>
+                <td>
+                    {% include 'publish/edit_modal.html' %}
+                    <button type="button" data-id="{{ publish.pk }}" onclick="confirm_delete(this)"
+                            class="btn btn-danger btn-sm">删除
+                    </button>
+                    <a href="{% url 'publish_books' id=publish.id %}">查看出版书籍</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -33,4 +42,60 @@
             </li>
         </ul>
     </nav>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function confirm_delete(obj) {
+            var id = $(obj).data("id");
+            layer.confirm('确定要删除吗?', {icon: 3, title: '删除出版社'}, function (index) {
+                $.post("{% url 'delete_publish' %}", {
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    'id': id
+                }, (res) => {
+                    if (res.status) {
+                        layer.msg(res.msg, {
+                            icon: 6
+                        }, function () {
+                            layer.close(index);
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+                return false;
+            });
+        }
+
+        $(document).on("click", ".update_publish", function () {
+            $.post("{% url 'update_publish' %}", $("#update_publish_form").serialize(), function (res) {
+                if (res.status) {
+                    layer.msg(res.msg, {
+                        icon: 6
+                    }, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    var result;
+                    if (typeof res.msg == "string") {
+                        result = res.msg;
+                    } else {
+                        var str = "";
+                        $.each(res.msg, function (index, item) {
+                            str += "<br>" + item[0]
+                        });
+                        result = str;
+                    }
+                    layer.msg(result, {
+                        icon: 5,
+                        time: 2000
+                    }, function () {
+                        window.location.reload();
+                    })
+                }
+            }, 'json');
+            return false;
+        });
+    </script>
 {% endblock %}

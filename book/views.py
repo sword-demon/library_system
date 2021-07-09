@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from book.forms.author_form import AddAuthor, UpdateAuthor
+from book.forms.publish_form import AddPublish, UpdatePublish
 from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
 from utils.json_response import Show
@@ -155,5 +157,121 @@ def author(request):
     return render(request, 'author/index.html', locals())
 
 
-def author_books(request):
-    pass
+@login_required
+def add_author(request):
+    if request.method == "POST":
+        author_form = AddAuthor(request.POST)
+        if author_form.is_valid():
+            Author.objects.create(**author_form.cleaned_data)
+            return Show.success("添加成功")
+        else:
+            return Show.fail(author_form.errors)
+    return render(request, 'author/add.html', locals())
+
+
+@login_required
+def update_author(request):
+    if request.method == "POST":
+        author_form = UpdateAuthor(request.POST)
+        if author_form.is_valid():
+            author_obj = Author.objects.filter(id=request.POST.get("id")).update(
+                **author_form.cleaned_data)
+            if author_obj:
+                return Show.success("修改成功")
+            else:
+                return Show.fail("该数据不存在")
+        else:
+            return Show.fail(author_form.errors)
+    else:
+        return Show.fail("非法请求")
+
+
+@login_required
+def delete_author(request):
+    if request.method != "POST":
+        return Show.fail("请求方法错误")
+
+    author_id = request.POST.get("id")
+    if author_id is None:
+        return Show.fail("参数错误")
+    try:
+        Publish.objects.filter(pk=author_id).first().delete()
+        return Show.success("删除成功")
+    except Exception as e:
+        print("异常: %s" % str(e))
+        return Show.fail("网络异常,请稍后重试")
+
+
+def author_books(request, id):
+    """
+    查询作者下有多少书籍
+    :param request:
+    :param id:
+    :return:
+    """
+    if id is None:
+        return render(request, 'layout/500.html')
+    author = Author.objects.filter(id=id).first()
+    books = author.book_set.all()
+    return render(request, 'author/author_books.html', {'books': books, 'author': author})
+
+
+def publish_books(request, id):
+    """
+    查看该出版社下的出版的书籍
+    :param request:
+    :param id:
+    :return:
+    """
+    if id is None:
+        return render(request, 'layout/500.html')
+    publish = Publish.objects.filter(id=id).first()
+    books = publish.book_set.all()
+    return render(request, 'publish/publish_books.html', {'books': books, 'publish': publish})
+
+
+@login_required
+def add_publish(request):
+    if request.method == "POST":
+        publish_form = AddPublish(request.POST)
+        if publish_form.is_valid():
+            # print(publish_form.cleaned_data)
+            Publish.objects.create(**publish_form.cleaned_data)
+            return Show.success("添加成功")
+        else:
+            return Show.fail(publish_form.errors)
+    return render(request, 'publish/add.html', locals())
+
+
+@login_required
+def update_publish(request):
+    if request.method == "POST":
+        publish_form = UpdatePublish(request.POST)
+        if publish_form.is_valid():
+            # print(publish_form.cleaned_data)
+            publish_obj = Publish.objects.filter(id=request.POST.get("id")).update(
+                **publish_form.cleaned_data)
+            if publish_obj:
+                return Show.success("修改成功")
+            else:
+                return Show.fail("该数据不存在")
+        else:
+            return Show.fail(publish_form.errors)
+    else:
+        return Show.fail("非法请求")
+
+
+@login_required
+def delete_publish(request):
+    if request.method != "POST":
+        return Show.fail("请求方法错误")
+
+    publish_id = request.POST.get("id")
+    if publish_id is None:
+        return Show.fail("参数错误")
+    try:
+        Publish.objects.filter(pk=publish_id).first().delete()
+        return Show.success("删除成功")
+    except Exception as e:
+        print("异常: %s" % str(e))
+        return Show.fail("网络异常,请稍后重试")

@@ -1,0 +1,33 @@
+{% extends 'layout/app.html' %}
+
+{% block title %}
+    当前作者{{ author.name }}拥有的书
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for book in books %}
+            <div class="col-sm-3 mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ book.title }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <span class="badge badge-info">价格</span>
+                            {{ book.price }}
+                        </p>
+                        <p>
+                            <span class="badge badge-primary">出版日期</span>
+                            {{ book.pub_date|date:"Y-m-d" }}
+                        </p>
+                        <p>
+                            <span class="badge badge-success">所属出版社</span>
+                            {{ book.publish.name }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

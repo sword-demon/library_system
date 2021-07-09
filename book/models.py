@@ -17,6 +17,14 @@ class Author(models.Model):
     def __str__(self):
         return self.name
 
+    def show_desc(self):
+        if len(self.desc) > 30:
+            return '{}......'.format(str(self.desc))[0:30]
+        else:
+            return str(self.desc)
+
+    show_desc.allow_tags = True
+
 
 class Publish(models.Model):
     """出版社表"""
