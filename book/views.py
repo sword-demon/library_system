@@ -1,5 +1,6 @@
 from django.contrib import auth
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -80,6 +81,7 @@ def logout(request):
     return redirect("login")
 
 
+@login_required
 def add(request):
     if request.method == "POST":
         title = request.POST.get("title")
@@ -103,6 +105,7 @@ def add(request):
     return render(request, 'root/add.html', locals())
 
 
+@login_required
 def book_edit(request, book_id):
     if request.method == "POST":
         pass
@@ -110,6 +113,7 @@ def book_edit(request, book_id):
     return render(request, 'root/edit.html', locals())
 
 
+@login_required
 def book_delete(request):
     if request.method != "POST":
         return Show.fail("请求类型错误")
