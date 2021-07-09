@@ -10,7 +10,7 @@ class AddBook(forms.Form):
             "required": "书籍名称不能为空"
         }
     )
-    pub_date = forms.IntegerField(
+    pub_date = forms.DateTimeField(
         required=True,
         error_messages={
             "required": "出版日期不能为空"

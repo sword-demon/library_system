@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from book.forms.author_form import AddAuthor, UpdateAuthor
-from book.forms.book_form import UpdateBook
+from book.forms.book_form import UpdateBook, AddBook
 from book.forms.publish_form import AddPublish, UpdatePublish
 from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
@@ -90,21 +90,24 @@ def logout(request):
 @login_required
 def add(request):
     if request.method == "POST":
-        title = request.POST.get("title")
-        pub_date = request.POST.get("pub_date")
-        price = request.POST.get("price")
-        publish_id = request.POST.get("publish_id")
+        book_form = AddBook(request.POST)
         author_id_list = request.POST.getlist("author_id_list")
-        try:
-            book = Book.objects.create(title=title, pub_date=pub_date, price=price, publish_id=publish_id)
-            if book:
-                book.authors.add(*author_id_list)
-                return Show.success("添加成功")
-            else:
-                return Show.fail("数据库异常，请稍后重试!")
-        except Exception as e:
-            print("异常: %s" % str(e))
-            return Show.fail("网络错误，请等会重试!")
+        book_obj = Book.objects.filter(title=request.POST.get("title")).exists()
+        if book_obj:
+            return Show.fail("该书已存在")
+        if book_form.is_valid():
+            try:
+                book = Book.objects.create(**book_form.cleaned_data)
+                if book:
+                    book.authors.add(*author_id_list)
+                    return Show.success("添加成功")
+                else:
+                    return Show.fail("数据库异常，请稍后重试!")
+            except Exception as e:
+                print("异常: %s" % str(e))
+                return Show.fail("网络错误，请等会重试!")
+        else:
+            return Show.fail(book_form.errors)
 
     publishes = Publish.objects.all().values("id", "name")
     authors = Author.objects.all().values("id", "name")

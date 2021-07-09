@@ -114,7 +114,22 @@
                         window.location.href = "{% url 'home' %}";
                     });
                 } else {
-                    layer.msg(res.msg);
+                    var result;
+                    if (typeof res.msg == "string") {
+                        result = res.msg;
+                    } else {
+                        var str = "";
+                        $.each(res.msg, function (index, item) {
+                            str += "<br>" + item[0]
+                        });
+                        result = str;
+                    }
+                    layer.msg(result, {
+                        icon: 5,
+                        time: 2000
+                    }, function () {
+                        window.location.reload();
+                    })
                 }
             }, 'json');
         });
