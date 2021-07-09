@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{% url 'add_publish' %}" class="btn btn-primary mb-2">添加作者</a>
+    <a href="{% url 'add_author' %}" class="btn btn-primary mb-2">添加作者</a>
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -15,6 +15,7 @@
             <th>手机号码</th>
             <th>生日</th>
             <th>简介</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -24,8 +25,14 @@
                 <td>{{ author.name }}</td>
                 <td>{{ author.age }}</td>
                 <td>{{ author.mobile }}</td>
-                <td>{{ author.birthday|date:"Y-m-d H:i:s" }}</td>
+                <td>{{ author.birthday|date:"Y-m-d" }}</td>
                 <td>{{ author.desc }}</td>
+                <td>
+                    {% include 'author/edit_modal.html' %}
+                    <button type="button" data-id="{{ author.pk }}" onclick="confirm_delete(this)"
+                            class="btn btn-danger btn-sm">删除
+                    </button>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -38,4 +45,60 @@
             </li>
         </ul>
     </nav>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function confirm_delete(obj) {
+            var id = $(obj).data("id");
+            layer.confirm('确定要删除吗?', {icon: 3, title: '删除作者'}, function (index) {
+                $.post("{% url 'delete_author' %}", {
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    'id': id
+                }, (res) => {
+                    if (res.status) {
+                        layer.msg(res.msg, {
+                            icon: 6
+                        }, function () {
+                            layer.close(index);
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+                return false;
+            });
+        }
+
+        $(document).on("click", ".update_author", function () {
+            $.post("{% url 'update_author' %}", $("#update_author_form").serialize(), function (res) {
+                if (res.status) {
+                    layer.msg(res.msg, {
+                        icon: 6
+                    }, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    var result;
+                    if (typeof res.msg == "string") {
+                        result = res.msg;
+                    } else {
+                        var str = "";
+                        $.each(res.msg, function (index, item) {
+                            str += "<br>" + item[0]
+                        });
+                        result = str;
+                    }
+                    layer.msg(result, {
+                        icon: 5,
+                        time: 2000
+                    }, function () {
+                        window.location.reload();
+                    })
+                }
+            }, 'json');
+            return false;
+        });
+    </script>
 {% endblock %}

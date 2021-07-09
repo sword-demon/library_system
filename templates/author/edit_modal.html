@@ -1,51 +1,68 @@
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editPublish-{{ publish.id }}">
+<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editAuthor-{{ author.id }}">
     编辑
 </button>
 <!-- Modal -->
-<div class="modal fade" id="editPublish-{{ publish.id }}" tabindex="-1" role="dialog"
-     aria-labelledby="editPublishLabel-{{ publish.id }}">
+<div class="modal fade" id="editAuthor-{{ author.id }}" tabindex="-1" role="dialog"
+     aria-labelledby="editPublishLabel-{{ author.id }}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="editTaskLabel-{{ publish.id }}">编辑出版社</h4>
+                <h4 class="modal-title" id="editTaskLabel-{{ author.id }}">编辑作者</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="update_publish_form">
+                <form id="update_author_form">
+                    <input type="hidden" name="id" value="{{ author.id }}">
                     {% csrf_token %}
-                    <input type="hidden" name="id" value="{{ publish.id }}">
+
                     <div class="form-group row">
-                        <label for="" class="col-md-4 col-form-label text-md-right">出版社名称</label>
+                        <label for="" class="col-md-4 col-form-label text-md-right">姓名</label>
                         <div class="col-md-6">
                             <input type="text" maxlength="32" class="form-control" name="name" required
                                    autocomplete="off"
-                                   placeholder="请输入出版社名称" value="{{ publish.name }}">
+                                   placeholder="请输入作者姓名" value="{{ author.name }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="" class="col-md-4 col-form-label text-md-right">所在城市</label>
+                        <label for="" class="col-md-4 col-form-label text-md-right">年龄</label>
                         <div class="col-md-6">
-                            <input type="text" name="city" class="form-control" required
+                            <input type="number" min="1" name="age" class="form-control" required
                                    autocomplete="off"
-                                   placeholder="请输入出版社所在城市" value="{{ publish.city }}">
+                                   placeholder="请输入作者年龄" value="{{ author.age }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="" class="col-md-4 col-form-label text-md-right">邮箱</label>
+                        <label for="" class="col-md-4 col-form-label text-md-right">手机号码</label>
                         <div class="col-md-6">
-                            <input type="email" name="email" class="form-control" required
+                            <input type="tel" maxlength="11" name="mobile" class="form-control" required
                                    autocomplete="off"
-                                   placeholder="请输入出版社邮箱" value="{{ publish.email }}">
+                                   placeholder="请输入手机号码" value="{{ author.mobile }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">生日</label>
+                        <div class="col-md-6">
+                            <input type="date" name="birthday" class="form-control" required
+                                   autocomplete="off"
+                                   placeholder="请选择生日" value="{{ author.birthday|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="" class="col-md-4 col-form-label text-md-right">简介</label>
+                        <div class="col-md-6">
+                            <textarea name="desc" class="form-control" autocomplete="off">{{ author.desc }}</textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="update_publish btn btn-primary">保存</button>
+                <button type="button" class="update_author btn btn-primary">保存</button>
                 <button type="button" class="btn btn-default btn-raised" data-dismiss="modal">取消</button>
             </div>
         </div>

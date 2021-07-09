@@ -45,7 +45,9 @@ urlpatterns = [
     # 删除出版社
     path('publish/delete/', views.delete_publish, name='delete_publish'),
     # 添加作者
-    path('add_author', views.add_author, name='add_author'),
+    path('add_author/', views.add_author, name='add_author'),
     # 更新作者信息
-    path('update_author', views.update_author, name='update_author'),
+    path('update_author/', views.update_author, name='update_author'),
+    # 删除作者
+    path('author/delete/', views.delete_author, name='delete_author'),
 ]

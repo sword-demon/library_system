@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from book.forms.author_form import AddAuthor, UpdateAuthor
 from book.forms.publish_form import AddPublish, UpdatePublish
 from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
@@ -156,12 +157,49 @@ def author(request):
     return render(request, 'author/index.html', locals())
 
 
+@login_required
 def add_author(request):
-    pass
+    if request.method == "POST":
+        author_form = AddAuthor(request.POST)
+        if author_form.is_valid():
+            Author.objects.create(**author_form.cleaned_data)
+            return Show.success("添加成功")
+        else:
+            return Show.fail(author_form.errors)
+    return render(request, 'author/add.html', locals())
 
 
+@login_required
 def update_author(request):
-    pass
+    if request.method == "POST":
+        author_form = UpdateAuthor(request.POST)
+        if author_form.is_valid():
+            author_obj = Author.objects.filter(id=request.POST.get("id")).update(
+                **author_form.cleaned_data)
+            if author_obj:
+                return Show.success("修改成功")
+            else:
+                return Show.fail("该数据不存在")
+        else:
+            return Show.fail(author_form.errors)
+    else:
+        return Show.fail("非法请求")
+
+
+@login_required
+def delete_author(request):
+    if request.method != "POST":
+        return Show.fail("请求方法错误")
+
+    author_id = request.POST.get("id")
+    if author_id is None:
+        return Show.fail("参数错误")
+    try:
+        Publish.objects.filter(pk=author_id).first().delete()
+        return Show.success("删除成功")
+    except Exception as e:
+        print("异常: %s" % str(e))
+        return Show.fail("网络异常,请稍后重试")
 
 
 def author_books(request):
