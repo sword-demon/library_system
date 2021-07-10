@@ -2,6 +2,7 @@ from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 from book.forms.author_form import AddAuthor, UpdateAuthor
@@ -11,6 +12,7 @@ from book.forms.user_form import RegisterForm, LoginForm
 from book.models import UserInfo, Book, Publish, Author
 from utils.json_response import Show
 from utils.page import ShowPage
+from utils.ajax_login_required import check_login
 
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -114,7 +116,7 @@ def add(request):
     return render(request, 'root/add.html', locals())
 
 
-@login_required
+@check_login
 def update_book(request):
     if request.method == "POST":
         book_form = UpdateBook(request.POST)
@@ -139,7 +141,7 @@ def update_book(request):
         return Show.fail("非法请求")
 
 
-@login_required
+@check_login
 def book_delete(request):
     if request.method != "POST":
         return Show.fail("请求类型错误")
@@ -193,7 +195,7 @@ def add_author(request):
     return render(request, 'author/add.html', locals())
 
 
-@login_required
+@check_login
 def update_author(request):
     if request.method == "POST":
         author_form = UpdateAuthor(request.POST)
@@ -210,7 +212,7 @@ def update_author(request):
         return Show.fail("非法请求")
 
 
-@login_required
+@check_login
 def delete_author(request):
     if request.method != "POST":
         return Show.fail("请求方法错误")
@@ -235,7 +237,10 @@ def author_books(request, id):
     """
     if id is None:
         return render(request, 'layout/500.html')
+    id = int(id)
     author = Author.objects.filter(id=id).first()
+    if author is None:
+        return render(request, 'author/author_books.html', {'errors': '作者不存在'})
     books = author.book_set.all()
     return render(request, 'author/author_books.html', {'books': books, 'author': author})
 
@@ -267,7 +272,7 @@ def add_publish(request):
     return render(request, 'publish/add.html', locals())
 
 
-@login_required
+@check_login
 def update_publish(request):
     if request.method == "POST":
         publish_form = UpdatePublish(request.POST)
@@ -285,7 +290,7 @@ def update_publish(request):
         return Show.fail("非法请求")
 
 
-@login_required
+@check_login
 def delete_publish(request):
     if request.method != "POST":
         return Show.fail("请求方法错误")
