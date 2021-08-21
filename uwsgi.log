@@ -1,0 +1,17 @@
+*** Starting uWSGI 2.0.19.1 (64bit) on [Sat Aug 21 12:21:52 2021] ***
+compiled with version: 10.2.1 20210110 on 21 August 2021 12:11:13
+os: Linux-5.10.47-linuxkit #1 SMP PREEMPT Sat Jul 3 21:50:16 UTC 2021
+nodename: f6b87c6cf5ec
+machine: aarch64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /var/www/html/library_system
+writing pidfile to uwsgi.pid
+detected binary path: /usr/local/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /var/www/html/docker_project/library_system
+chdir(): No such file or directory [core/uwsgi.c line 2625]
+VACUUM: pidfile removed.
+chdir(): No such file or directory [core/uwsgi.c line 1649]
