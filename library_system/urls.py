@@ -20,17 +20,9 @@ from django.views.static import serve
 from book import views
 from library_system import settings
 
-if settings.DEBUG:
-    urlpatterns = [
-        path('admin/', admin.site.urls, name="admin"),
-        path('book/', include('book.urls')),
-        path('', views.index, name='home'),
-        # re_path("^static/(?P<path>.*)", serve, {'document_root': settings.STATIC_ROOT}),  # 用于处理static里的文件
-    ]
-else:
-    urlpatterns = [
-        path('admin/', admin.site.urls, name="admin"),
-        path('book/', include('book.urls')),
-        path('', views.index, name='home'),
-        re_path("^static/(?P<path>.*)", serve, {'document_root': settings.STATIC_ROOT}),  # 用于处理static里的文件
-    ]
+urlpatterns = [
+    path('admin/', admin.site.urls, name="admin"),
+    path('book/', include('book.urls')),
+    path('', views.index, name='home'),
+    # re_path("^static/(?P<path>.*)", serve, {'document_root': settings.STATIC_ROOT}),  # 用于处理static里的文件
+]
