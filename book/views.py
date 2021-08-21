@@ -109,7 +109,7 @@ def add(request):
                 print("异常: %s" % str(e))
                 return Show.fail("网络错误，请等会重试!")
         else:
-            return Show.fail(book_form.errors)
+            return Show.fiail(book_form.errors)
 
     publishes = Publish.objects.all().values("id", "name")
     authors = Author.objects.all().values("id", "name")
